@@ -173,32 +173,58 @@ function App() {
           </button>
         )}
 
-        <div className="chat-input">
-          <textarea
-            ref={textareaRef}
-            rows="1"
-            placeholder="ask anything"
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-          />
-          <button onClick={handleSend} className="send-button">
+          <div className="chat-input">
+            <textarea
+              ref={textareaRef}
+              rows="1"
+              placeholder="ask anything"
+              value={input}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+            />
+            <button 
+              className="attach-button"
+              title="File attachments coming soon"
+              disabled
+            >
+              {/* Paperclip icon remains here */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+              </svg>
+            </button>
+            <button onClick={handleSend} className="send-button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
               height="24"
+              viewBox="0 0 24 24"
               fill="none"
               stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              viewBox="0 0 24 24"
             >
-              <line x1="12" y1="19" x2="12" y2="5" />
-              <polyline points="5 12 12 5 19 12" />
+              {isGenerating ? (
+                <rect x="6" y="6" width="12" height="12" fill="white" />
+              ) : (
+                <>
+                  <line x1="12" y1="19" x2="12" y2="5" />
+                  <polyline points="5 12 12 5 19 12" />
+                </>
+              )}
             </svg>
           </button>
-        </div>
+          </div>
       </div>
     </div>
   );
