@@ -1,39 +1,52 @@
-/* Overall dark mode style for the app */
+/* -------------------------- */
+/* Overall App Layout         */
+/* -------------------------- */
 .app {
-  background-color: #343541; /* ChatGPT-like dark background */
-  min-height: 100vh;
-  color: #fff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #343541;
+  margin: 0;
   padding: 20px;
-  overflow: hidden; /* Only the chat-window scrolls */
+  overflow: hidden;
+  color: #fff;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
-/* Top slider area */
-.daily-limit {
-  margin-bottom: 20px;
+/* -------------------------- */
+/* Header Area                */
+/* -------------------------- */
+.header {
   display: flex;
   align-items: center;
-  flex-shrink: 0;
+  justify-content: center;
+  margin-bottom: 20px;
 }
-.daily-limit label {
-  font-size: 16px;
+.header-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
-.daily-limit input {
-  width: 200px;
-  margin-left: 10px;
+.header-text {
+  font-size: 24px;
+  color: #fff;
 }
 
-/* Main chat container spans nearly the full width */
+/* -------------------------- */
+/* Main Chat Container        */
+/* -------------------------- */
 .chat-container {
   position: relative;
   width: calc(100% - 40px);
   max-width: 800px;
   margin: 0 auto;
-  background: #343541; /* Unified background */
+  background: #343541;
   height: calc(100vh - 150px);
 }
 
-/* Logo container in the back (lowest z-index) */
+/* -------------------------- */
+/* Logo Container (Background)*/
+/* -------------------------- */
 .logo-container {
   position: absolute;
   top: 0;
@@ -45,7 +58,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  pointer-events: none; /* Let clicks pass through */
+  pointer-events: none;
 }
 .tagline {
   margin-top: 10px;
@@ -53,59 +66,95 @@
   transition: opacity 0.5s ease;
 }
 
-/* Scrollable chat messages area (only one scrollbar) */
+/* -------------------------- */
+/* Chat Messages Area         */
+/* -------------------------- */
 .chat-window {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: 80px; /* Reserve space for input area */
+  bottom: 80px;
   padding: 20px;
   overflow-y: auto;
   z-index: 1;
 }
+
+.chat-window::-webkit-scrollbar {
+  width: 8px;
+}
+.chat-window::-webkit-scrollbar-track {
+  background: #343541;
+}
+.chat-window::-webkit-scrollbar-thumb {
+  background-color: #525252;
+  border-radius: 4px;
+}
+
 .chat-message {
   margin-bottom: 10px;
   font-size: 16px;
   line-height: 1.4;
+  white-space: pre-wrap;
 }
 
-/* User messages: right-aligned rounded bubble */
+.chat-message.bot {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* In App.css - Update user message rules */
+/* User messages */
 .chat-message.user {
-  text-align: right;
-  color: #fff;
-  background: #3a3f45;
+  background: #525252;
   border-radius: 16px;
   padding: 10px 14px;
-  display: inline-block;
   max-width: 80%;
-  margin-left: auto;
-}
-
-/* Bot messages: plain text on the left */
-.chat-message.bot {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  display: block;
+  width: fit-content;
   text-align: left;
-  color: #fff;
-  padding: 5px 0;
 }
 
-/* Fixed input area at the bottom */
-/* Fixed input area at the bottom */
+/* Remove any conflicting margin on the text itself */
+.chat-message.user .message-text {
+  margin: 0;
+  padding: 0;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #525252;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+.avatar img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+.message-text {
+  flex: 1;
+}
+
+/* -------------------------- */
+/* Fixed Input Area           */
+/* -------------------------- */
 .chat-input {
   position: absolute;
-  left: 5px;
-  right: 5px;
-  bottom: 0px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
   z-index: 2;
-  /* Removed the duplicate position: relative; so that the container stays at the bottom */
   background: #2a2d33;
-  border-radius: 28px;
+  border-radius: 22px;
   padding: 10px;
-  /* Height is auto based on textarea content */
 }
-
-
-/* Multi-line textarea styled to match previous input */
 .chat-input textarea {
   width: 100%;
   background: transparent;
@@ -113,21 +162,31 @@
   outline: none;
   font-size: 16px;
   color: #fff;
-  resize: none;       /* Prevent manual resizing */
-  overflow: hidden;   /* No scrollbars on the textarea */
-  line-height: 2;
-  padding-right: 100px; /* Ensure space for the send button */
+  resize: none;
+  overflow-y: auto;
+  line-height: 1.4;
+  padding-right: 50px;
+  max-height: 150px;
+}
+.chat-input textarea::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-input textarea::-webkit-scrollbar-track {
+  background: #2a2d33;
+}
+.chat-input textarea::-webkit-scrollbar-thumb {
+  background-color: #343541;
+  border-radius: 3px;
 }
 
-/* Send button: absolutely positioned at the bottom right of the input area */
 .send-button {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 8px;
+  right: 8px;
   width: 40px;
   height: 40px;
   border: none;
-  border-radius: 50%;
+  border-radius: 100px;
   background: #343541;
   display: flex;
   align-items: center;
@@ -142,19 +201,14 @@
 /* -------------------------- */
 /* Logo Animation & Styling   */
 /* -------------------------- */
-
-/* Ensure each circle scales from its center */
 .logo-center,
 .logo-node {
   transform-origin: center;
   transform-box: fill-box;
 }
-/* Entire logo at 50% opacity */
 .logo-svg {
   opacity: 0.5;
 }
-
-/* Keyframes for pulsing (scaling from center) */
 @keyframes pulseCenter {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.5); }
@@ -163,46 +217,37 @@
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.5); }
 }
-
-/* Apply animation when "thinking" */
 .logo-center.thinking {
   animation: pulseCenter 1s infinite;
 }
 .logo-node.thinking {
   animation: pulseOuter 1s infinite;
 }
-/* Staggered delays for outer circles */
 .logo-node.top.thinking    { animation-delay: 0.2s; }
 .logo-node.right.thinking  { animation-delay: 0.3s; }
 .logo-node.bottom.thinking { animation-delay: 0.4s; }
 .logo-node.left.thinking   { animation-delay: 0.5s; }
-/* ... other styles ... */
 
-/* Chat message styling */
-.chat-message {
-  margin-bottom: 10px;
-  font-size: 16px;
-  line-height: 1.4;
-  white-space: pre-wrap;  /* Preserve newlines and whitespace */
+/* -------------------------- */
+/* Scroll to Bottom Button    */
+/* -------------------------- */
+.scroll-to-bottom {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #525252;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-
-/* User messages: right-aligned rounded bubble */
-.chat-message.user {
-  text-align: right;
-  color: #fff;
-  background: #3a3f45;
-  border-radius: 16px;
-  padding: 10px 14px;
-  display: inline-block;
-  max-width: 80%;
-  margin-left: auto;
+.scroll-to-bottom:hover {
+  background: #6b6b6b;
 }
-
-/* Bot messages: plain text on the left */
-.chat-message.bot {
-  text-align: left;
-  color: #fff;
-  padding: 5px 0;
-}
-
-/* ... other styles ... */

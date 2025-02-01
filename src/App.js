@@ -1,8 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import icon from './icon.svg';
 import './App.css';
 
-/* Inline Logo component for animation control */
 const Logo = ({ isThinking }) => (
   <svg
     className="logo-svg"
@@ -11,13 +10,11 @@ const Logo = ({ isThinking }) => (
     height="128"
     viewBox="0 0 128 128"
   >
-    {/* Connecting lines */}
     <line x1="64" y1="64" x2="64" y2="24" stroke="white" strokeWidth="4" />
     <line x1="64" y1="64" x2="104" y2="64" stroke="white" strokeWidth="4" />
     <line x1="64" y1="64" x2="64" y2="104" stroke="white" strokeWidth="4" />
     <line x1="64" y1="64" x2="24" y2="64" stroke="white" strokeWidth="4" />
 
-    {/* Center circle */}
     <circle
       cx="64"
       cy="64"
@@ -26,7 +23,6 @@ const Logo = ({ isThinking }) => (
       className={isThinking ? "logo-center thinking" : "logo-center"}
     />
 
-    {/* Outer circles */}
     <circle
       cx="64"
       cy="24"
@@ -59,29 +55,49 @@ const Logo = ({ isThinking }) => (
 );
 
 function App() {
-  const [dailyLimit, setDailyLimit] = useState(5);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const textareaRef = useRef(null);
+  const chatWindowRef = useRef(null);
 
   const userStartedChatting = messages.length > 0 || input.trim().length > 0;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (chatWindowRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = chatWindowRef.current;
+        setShowScrollToBottom(scrollTop + clientHeight < scrollHeight - 100);
+      }
+    };
+
+    const currentRef = chatWindowRef.current;
+    currentRef?.addEventListener('scroll', handleScroll);
+    return () => currentRef?.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (chatWindowRef.current && !showScrollToBottom) {
+      chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+    }
+  }, [messages, showScrollToBottom]);
 
   const handleSend = () => {
     if (input.trim() === '') return;
 
-    // Append user's message
     const userMessage = { sender: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     if (textareaRef.current) {
-      // Reset the textarea height back to its minimal size
       textareaRef.current.style.height = 'auto';
     }
     setIsGenerating(true);
 
-    // Simulate a bot response after 2 seconds
-    const botResponse = { sender: 'bot', text: 'This is a simulated response.' };
+    const botResponse = {
+      sender: 'bot',
+      text: 'This is a simulated response.\nIt can span multiple lines.\nEnjoy!'
+    };
     setTimeout(() => {
       setMessages((prev) => [...prev, botResponse]);
       setIsGenerating(false);
@@ -90,53 +106,73 @@ function App() {
 
   const handleInputChange = (e) => {
     setInput(e.target.value);
-    // Auto-resize the textarea dynamically
     e.target.style.height = 'auto';
     e.target.style.height = e.target.scrollHeight + 'px';
   };
 
   const handleKeyDown = (e) => {
-    // If Enter is pressed without Shift, send the message.
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
-    // Shift+Enter allows a newline (default behavior).
   };
 
   return (
     <div className="app">
-      {/* Top slider area */}
-      <div className="daily-limit">
-        <label htmlFor="limit-slider">Daily Consumption Limit: ${dailyLimit}</label>
-        <input
-          id="limit-slider"
-          type="range"
-          min="1"
-          max="10"
-          value={dailyLimit}
-          onChange={(e) => setDailyLimit(e.target.value)}
-        />
+      <div className="header">
+        <img src={icon} alt="Icon" className="header-icon" />
+        <span className="header-text">
+          ORCHESTR<strong>AI</strong>TOR
+        </span>
       </div>
 
-      {/* Main chat container */}
       <div className="chat-container">
-        {/* Background logo (always in the back) */}
         <div className="logo-container">
           <Logo isThinking={isGenerating} />
-      
+          {!userStartedChatting && (
+            <p className="tagline">your friend who is good at everything ;)</p>
+          )}
         </div>
 
-        {/* Scrollable chat messages area */}
-        <div className="chat-window">
+        <div className="chat-window" ref={chatWindowRef}>
           {messages.map((msg, index) => (
             <div key={index} className={`chat-message ${msg.sender}`}>
-              {msg.text}
+              {msg.sender === 'bot' && (
+                <div className="avatar">
+                  <img src={icon} alt="Bot Avatar" />
+                </div>
+              )}
+              <div className="message-text">{msg.text}</div>
             </div>
           ))}
         </div>
 
-        {/* Fixed input area at the bottom */}
+        {showScrollToBottom && (
+          <button 
+            className="scroll-to-bottom"
+            onClick={() => {
+              chatWindowRef.current?.scrollTo({
+                top: chatWindowRef.current.scrollHeight,
+                behavior: 'smooth'
+              });
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 5v14M19 12l-7 7-7-7"/>
+            </svg>
+          </button>
+        )}
+
         <div className="chat-input">
           <textarea
             ref={textareaRef}
