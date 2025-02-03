@@ -1,6 +1,99 @@
 import React, { useState, useRef, useEffect } from 'react';
 import icon from './icon.svg';
+import deepseekLogo from './deepseek.svg';
+import claudeLogo from './claude.svg';
+import openaiLogo from './openai.svg';
 import './App.css';
+
+// Component to render a model logo image with glowing animation if active.
+const LogoIcon = ({ type, active }) => {
+  let src;
+  let activeColor;
+  switch (type) {
+    case 'deepseek':
+      src = deepseekLogo;
+      activeColor = '#007BFF'; // blue
+      break;
+    case 'claude':
+      src = claudeLogo;
+      activeColor = '#FF0000'; // red
+      break;
+    case 'openai':
+      src = openaiLogo;
+      activeColor = '#FFFFFF'; // white
+      break;
+    default:
+      src = '';
+      activeColor = '#808080';
+  }
+  return (
+    <img
+      src={src}
+      alt={`${type} logo`}
+      className={`logo-icon ${active ? 'active' : ''}`}
+      style={active ? { '--active-color': activeColor } : {}}
+    />
+  );
+};
+
+const Sidebar = ({ isOpen, toggleSidebar, handleNewChat }) => {
+  return (
+    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
+      <button className="sidebar-toggle-button" onClick={toggleSidebar}>
+        {isOpen ? (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        ) : (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="white"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <polyline points="9 6 15 12 9 18" />
+          </svg>
+        )}
+      </button>
+      {isOpen && (
+        <div className="sidebar-content">
+          <button className="new-chat-button" onClick={handleNewChat}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New Chat
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Logo = ({ isThinking }) => (
   <svg
@@ -20,7 +113,7 @@ const Logo = ({ isThinking }) => (
       cy="64"
       r="8"
       fill="white"
-      className={isThinking ? "logo-center thinking" : "logo-center"}
+      className={isThinking ? 'logo-center thinking' : 'logo-center'}
     />
 
     <circle
@@ -28,28 +121,28 @@ const Logo = ({ isThinking }) => (
       cy="24"
       r="8"
       fill="white"
-      className={isThinking ? "logo-node thinking top" : "logo-node top"}
+      className={isThinking ? 'logo-node thinking top' : 'logo-node top'}
     />
     <circle
       cx="104"
       cy="64"
       r="8"
       fill="white"
-      className={isThinking ? "logo-node thinking right" : "logo-node right"}
+      className={isThinking ? 'logo-node thinking right' : 'logo-node right'}
     />
     <circle
       cx="64"
       cy="104"
       r="8"
       fill="white"
-      className={isThinking ? "logo-node thinking bottom" : "logo-node bottom"}
+      className={isThinking ? 'logo-node thinking bottom' : 'logo-node bottom'}
     />
     <circle
       cx="24"
       cy="64"
       r="8"
       fill="white"
-      className={isThinking ? "logo-node thinking left" : "logo-node left"}
+      className={isThinking ? 'logo-node thinking left' : 'logo-node left'}
     />
   </svg>
 );
@@ -59,10 +152,9 @@ function App() {
   const [input, setInput] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const textareaRef = useRef(null);
   const chatWindowRef = useRef(null);
-
-  const userStartedChatting = messages.length > 0 || input.trim().length > 0;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,7 +177,6 @@ function App() {
 
   const handleSend = () => {
     if (input.trim() === '') return;
-
     const userMessage = { sender: 'user', text: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
@@ -94,9 +185,11 @@ function App() {
     }
     setIsGenerating(true);
 
+    // Simulated bot response with a random activeLogo property
     const botResponse = {
       sender: 'bot',
-      text: 'This is a simulated response.\nIt can span multiple lines.\nEnjoy!'
+      text: 'This is a simulated response.\nIt can span multiple lines.\nEnjoy!',
+      activeLogo: Math.floor(Math.random() * 3),
     };
     setTimeout(() => {
       setMessages((prev) => [...prev, botResponse]);
@@ -117,62 +210,103 @@ function App() {
     }
   };
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const handleNewChat = () => {
+    setMessages([]);
+    setIsSidebarOpen(false);
+  };
+
   return (
     <div className="app">
-      <div className="header">
-        <img src={icon} alt="Icon" className="header-icon" />
-        <span className="header-text">
-          ORCHESTR<strong>AI</strong>TOR
-        </span>
-      </div>
-
-      <div className="chat-container">
-        <div className="logo-container">
-          <Logo isThinking={isGenerating} />
-          {!userStartedChatting && (
-            <p className="tagline">your friend who is good at everything ;)</p>
-          )}
+      <Sidebar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleNewChat={handleNewChat}
+      />
+      <div className="main-content">
+        <div className="header">
+          <img src={icon} alt="Icon" className="header-icon" />
+          <span className="header-text">
+            ORCHESTR<strong>AI</strong>TOR
+          </span>
         </div>
-
-        <div className="chat-window" ref={chatWindowRef}>
-          {messages.map((msg, index) => (
-            <div key={index} className={`chat-message ${msg.sender}`}>
-              {msg.sender === 'bot' && (
-                <div className="avatar">
-                  <img src={icon} alt="Bot Avatar" />
+        <div className="chat-container">
+          <div className="logo-container">
+            <Logo isThinking={isGenerating} />
+          </div>
+          <div className="chat-area">
+            <div className="chat-window" ref={chatWindowRef}>
+              {messages.map((msg, index) => (
+                <div key={index} className={`chat-message ${msg.sender}`}>
+                  {msg.sender === 'bot' && (
+                    <div className="avatar">
+                      <img src={icon} alt="Bot Avatar" />
+                    </div>
+                  )}
+                  <div>
+                    <div className="message-text">{msg.text}</div>
+                    {msg.sender === 'bot' && (
+                      <div className="message-actions">
+                        <div className="logo-buttons">
+                          <LogoIcon type="deepseek" active={msg.activeLogo === 0} />
+                          <LogoIcon type="claude" active={msg.activeLogo === 1} />
+                          <LogoIcon type="openai" active={msg.activeLogo === 2} />
+                        </div>
+                        <button
+                          className="action-button copy-button"
+                          onClick={() => navigator.clipboard.writeText(msg.text)}
+                          title="Copy text"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            viewBox="0 0 24 24"
+                          >
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-              <div className="message-text">{msg.text}</div>
+              ))}
             </div>
-          ))}
-        </div>
-
-        {showScrollToBottom && (
-          <button 
-            className="scroll-to-bottom"
-            onClick={() => {
-              chatWindowRef.current?.scrollTo({
-                top: chatWindowRef.current.scrollHeight,
-                behavior: 'smooth'
-              });
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 5v14M19 12l-7 7-7-7"/>
-            </svg>
-          </button>
-        )}
-
+            {showScrollToBottom && (
+              <button
+                className="scroll-to-bottom"
+                onClick={() => {
+                  chatWindowRef.current?.scrollTo({
+                    top: chatWindowRef.current.scrollHeight,
+                    behavior: 'smooth',
+                  });
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 5v14M19 12l-7 7-7-7" />
+                </svg>
+              </button>
+            )}
+          </div>
           <div className="chat-input">
             <textarea
               ref={textareaRef}
@@ -182,12 +316,11 @@ function App() {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
             />
-            <button 
+            <button
               className="attach-button"
               title="File attachments coming soon"
               disabled
             >
-              {/* Paperclip icon remains here */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -203,28 +336,29 @@ function App() {
               </svg>
             </button>
             <button onClick={handleSend} className="send-button">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {isGenerating ? (
-                <rect x="6" y="6" width="12" height="12" fill="white" />
-              ) : (
-                <>
-                  <line x1="12" y1="19" x2="12" y2="5" />
-                  <polyline points="5 12 12 5 19 12" />
-                </>
-              )}
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {isGenerating ? (
+                  <rect x="6" y="6" width="12" height="12" fill="white" />
+                ) : (
+                  <>
+                    <line x1="12" y1="19" x2="12" y2="5" />
+                    <polyline points="5 12 12 5 19 12" />
+                  </>
+                )}
+              </svg>
+            </button>
           </div>
+        </div>
       </div>
     </div>
   );
