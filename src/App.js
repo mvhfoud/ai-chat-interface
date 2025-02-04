@@ -5,8 +5,7 @@ import claudeLogo from './claude.svg';
 import openaiLogo from './openai.svg';
 import './App.css';
 
-// Component to render a model logo image with glowing animation if active.
-const LogoIcon = ({ type, active }) => {
+const LogoIcon = ({ type, active, size }) => {
   let src;
   let activeColor;
   switch (type) {
@@ -18,7 +17,7 @@ const LogoIcon = ({ type, active }) => {
       src = claudeLogo;
       activeColor = '#FF0000'; // red
       break;
-    case 'openai':
+    case 'openai': // representing GPT
       src = openaiLogo;
       activeColor = '#FFFFFF'; // white
       break;
@@ -31,12 +30,33 @@ const LogoIcon = ({ type, active }) => {
       src={src}
       alt={`${type} logo`}
       className={`logo-icon ${active ? 'active' : ''}`}
-      style={active ? { '--active-color': activeColor } : {}}
+      style={{
+        ...(active ? { '--active-color': activeColor } : {}),
+        width: size,
+        height: size,
+        background: 'none'
+      }}
     />
   );
 };
 
 const Sidebar = ({ isOpen, toggleSidebar, handleNewChat }) => {
+  // We no longer need the slider so we remove any state related to color.
+  // Instead, we use a fixed hue value of 168 (roughly matching #45b9a2).
+  const [overClass, setOverClass] = useState(false);
+
+  // Mimic the temporary "over" class behavior with a setTimeout.
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setOverClass(true);
+      const removeTimeout = setTimeout(() => {
+        setOverClass(false);
+      }, 2500);
+      return () => clearTimeout(removeTimeout);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <button className="sidebar-toggle-button" onClick={toggleSidebar}>
@@ -70,27 +90,16 @@ const Sidebar = ({ isOpen, toggleSidebar, handleNewChat }) => {
           </svg>
         )}
       </button>
-      {isOpen && (
-        <div className="sidebar-content">
-          <button className="new-chat-button" onClick={handleNewChat}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            New Chat
-          </button>
-        </div>
-      )}
+      <div className="sidebar-content">
+        {/* Sparkly Button now uses a fixed color hue (168) and displays "new chat (inline)" */}
+        <button
+          className={`sparkles ${overClass ? "over" : ""}`}
+          onClick={handleNewChat}
+          style={{ "--clr": 168 }}
+        >
+          <span>New chat</span>
+        </button>
+      </div>
     </div>
   );
 };
@@ -107,7 +116,6 @@ const Logo = ({ isThinking }) => (
     <line x1="64" y1="64" x2="104" y2="64" stroke="white" strokeWidth="4" />
     <line x1="64" y1="64" x2="64" y2="104" stroke="white" strokeWidth="4" />
     <line x1="64" y1="64" x2="24" y2="64" stroke="white" strokeWidth="4" />
-
     <circle
       cx="64"
       cy="64"
@@ -115,7 +123,6 @@ const Logo = ({ isThinking }) => (
       fill="white"
       className={isThinking ? 'logo-center thinking' : 'logo-center'}
     />
-
     <circle
       cx="64"
       cy="24"
@@ -147,6 +154,24 @@ const Logo = ({ isThinking }) => (
   </svg>
 );
 
+const ChatInputWithFooter = ({ chatInputBlock }) => {
+  return (
+    <div style={{ width: '100%', textAlign: 'center' }}>
+      {chatInputBlock}
+      <div
+        style={{
+          marginTop: '10px',
+          textAlign: 'center',
+          fontSize: '10px',
+          color: '#ccd6f6'
+        }}
+      >
+        orchestrAItor can make mistakes. Check important info.
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -156,24 +181,28 @@ function App() {
   const textareaRef = useRef(null);
   const chatWindowRef = useRef(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (chatWindowRef.current) {
-        const { scrollTop, scrollHeight, clientHeight } = chatWindowRef.current;
-        setShowScrollToBottom(scrollTop + clientHeight < scrollHeight - 100);
-      }
-    };
-
-    const currentRef = chatWindowRef.current;
-    currentRef?.addEventListener('scroll', handleScroll);
-    return () => currentRef?.removeEventListener('scroll', handleScroll);
-  }, []);
+  const isInitial = messages.length === 0;
 
   useEffect(() => {
-    if (chatWindowRef.current && !showScrollToBottom) {
+    if (!isInitial) {
+      const handleScroll = () => {
+        if (chatWindowRef.current) {
+          const { scrollTop, scrollHeight, clientHeight } = chatWindowRef.current;
+          setShowScrollToBottom(scrollTop + clientHeight < scrollHeight - 100);
+        }
+      };
+
+      const currentRef = chatWindowRef.current;
+      currentRef?.addEventListener('scroll', handleScroll);
+      return () => currentRef?.removeEventListener('scroll', handleScroll);
+    }
+  }, [isInitial]);
+
+  useEffect(() => {
+    if (!isInitial && chatWindowRef.current && !showScrollToBottom) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
-  }, [messages, showScrollToBottom]);
+  }, [messages, showScrollToBottom, isInitial]);
 
   const handleSend = () => {
     if (input.trim() === '') return;
@@ -189,7 +218,7 @@ function App() {
     const botResponse = {
       sender: 'bot',
       text: 'This is a simulated response.\nIt can span multiple lines.\nEnjoy!',
-      activeLogo: Math.floor(Math.random() * 3),
+      activeLogo: Math.floor(Math.random() * 3)
     };
     setTimeout(() => {
       setMessages((prev) => [...prev, botResponse]);
@@ -219,6 +248,61 @@ function App() {
     setIsSidebarOpen(false);
   };
 
+  const chatInputBlock = (
+    <div className="chat-input">
+      <textarea
+        ref={textareaRef}
+        rows="1"
+        placeholder="ask anything"
+        value={input}
+        onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
+        style={{ fontFamily: 'inherit' }}
+      />
+      <button
+        className="attach-button"
+        title="File attachments coming soon"
+        disabled
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          viewBox="0 0 24 24"
+        >
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
+        </svg>
+      </button>
+      <button onClick={handleSend} className="send-button">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="white"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          {isGenerating ? (
+            <rect x="6" y="6" width="12" height="12" fill="white" />
+          ) : (
+            <>
+              <line x1="12" y1="19" x2="12" y2="5" />
+              <polyline points="5 12 12 5 19 12" />
+            </>
+          )}
+        </svg>
+      </button>
+    </div>
+  );
+
   return (
     <div className="app">
       <Sidebar
@@ -227,138 +311,139 @@ function App() {
         handleNewChat={handleNewChat}
       />
       <div className="main-content">
-        <div className="header">
-          <img src={icon} alt="Icon" className="header-icon" />
-          <span className="header-text">
-            ORCHESTR<strong>AI</strong>TOR
-          </span>
-        </div>
-        <div className="chat-container">
-          <div className="logo-container">
-            <Logo isThinking={isGenerating} />
-          </div>
-          <div className="chat-area">
-            <div className="chat-window" ref={chatWindowRef}>
-              {messages.map((msg, index) => (
-                <div key={index} className={`chat-message ${msg.sender}`}>
-                  {msg.sender === 'bot' && (
-                    <div className="avatar">
-                      <img src={icon} alt="Bot Avatar" />
-                    </div>
-                  )}
-                  <div>
-                    <div className="message-text">{msg.text}</div>
-                    {msg.sender === 'bot' && (
-                      <div className="message-actions">
-                        <div className="logo-buttons">
-                          <LogoIcon type="deepseek" active={msg.activeLogo === 0} />
-                          <LogoIcon type="claude" active={msg.activeLogo === 1} />
-                          <LogoIcon type="openai" active={msg.activeLogo === 2} />
-                        </div>
-                        <button
-                          className="action-button copy-button"
-                          onClick={() => navigator.clipboard.writeText(msg.text)}
-                          title="Copy text"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            viewBox="0 0 24 24"
-                          >
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-            {showScrollToBottom && (
-              <button
-                className="scroll-to-bottom"
-                onClick={() => {
-                  chatWindowRef.current?.scrollTo({
-                    top: chatWindowRef.current.scrollHeight,
-                    behavior: 'smooth',
-                  });
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 5v14M19 12l-7 7-7-7" />
-                </svg>
-              </button>
-            )}
-          </div>
-          <div className="chat-input">
-            <textarea
-              ref={textareaRef}
-              rows="1"
-              placeholder="ask anything"
-              value={input}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-            />
-            <button
-              className="attach-button"
-              title="File attachments coming soon"
-              disabled
+        {isInitial ? (
+          <div
+            className="initial-container"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '140vh',
+              textAlign: 'center',
+              color: '#ccd6f6'
+            }}
+          >
+            <div
+              className="initial-header"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '20px',
+                transform: 'scale(1.15)',
+                transformOrigin: 'center'
+              }}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" />
-              </svg>
-            </button>
-            <button onClick={handleSend} className="send-button">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                {isGenerating ? (
-                  <rect x="6" y="6" width="12" height="12" fill="white" />
-                ) : (
-                  <>
-                    <line x1="12" y1="19" x2="12" y2="5" />
-                    <polyline points="5 12 12 5 19 12" />
-                  </>
-                )}
-              </svg>
-            </button>
+              <img src={icon} alt="Icon" className="header-icon" style={{ marginBottom: 0 }} />
+              <div className="header-text">
+                ORCHESTR<strong>AI</strong>TOR
+              </div>
+            </div>
+            <ChatInputWithFooter chatInputBlock={chatInputBlock} />
+            <div
+              style={{
+                marginTop: '140px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '20px'
+              }}
+            >
+              <p className="glow" style={{ fontSize: '15px', margin: 0 }}>
+                manifest the power of all three <strong>at once!</strong>
+              </p>
+              <div style={{ display: 'flex', gap: '20px' }}>
+                <LogoIcon type="deepseek" active={false} size="45px" />
+                <LogoIcon type="claude" active={false} size="45px" />
+                <LogoIcon type="openai" active={false} size="45px" />
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="header">
+              <img src={icon} alt="Icon" className="header-icon" />
+              <span className="header-text">
+                ORCHESTR<strong>AI</strong>TOR
+              </span>
+            </div>
+            <div className="chat-container">
+              <div className="logo-container">
+                <Logo isThinking={isGenerating} />
+              </div>
+              <div className="chat-area">
+                <div className="chat-window" ref={chatWindowRef}>
+                  {messages.map((msg, index) => (
+                    <div key={index} className={`chat-message ${msg.sender}`}>
+                      {msg.sender === 'bot' && (
+                        <div className="avatar">
+                          <img src={icon} alt="Bot Avatar" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="message-text">{msg.text}</div>
+                        {msg.sender === 'bot' && (
+                          <div className="message-actions">
+                            <div className="logo-buttons">
+                              <LogoIcon type="deepseek" active={msg.activeLogo === 0} />
+                              <LogoIcon type="claude" active={msg.activeLogo === 1} />
+                              <LogoIcon type="openai" active={msg.activeLogo === 2} />
+                            </div>
+                            <button
+                              className="action-button copy-button"
+                              onClick={() => navigator.clipboard.writeText(msg.text)}
+                              title="Copy text"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                viewBox="0 0 24 24"
+                              >
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                              </svg>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="scroll-to-bottom"
+                  onClick={() => {
+                    chatWindowRef.current?.scrollTo({
+                      top: chatWindowRef.current.scrollHeight,
+                      behavior: 'smooth'
+                    });
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 5v14M19 12l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+              <ChatInputWithFooter chatInputBlock={chatInputBlock} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
