@@ -22,18 +22,15 @@ body {
   flex-direction: column;
   align-items: center;
 }
-
 .sidebar.open {
   width: 250px;
   background: #172a46;
   box-shadow: 3px 5px 10px rgba(0, 0, 0, 0.2);
 }
-
 .sidebar.closed {
   width: 50px;
   background: transparent;
 }
-
 .sidebar.open .sidebar-toggle-button {
   position: absolute;
   top: 19px;
@@ -42,7 +39,6 @@ body {
   background: #172a46;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
 .sidebar-toggle-button {
   margin: 20px;
   width: 40px;
@@ -55,7 +51,6 @@ body {
   justify-content: center;
   cursor: pointer;
 }
-
 .sidebar-content {
   margin-top: 20px;
   width: 100%;
@@ -63,191 +58,26 @@ body {
   flex-direction: column;
   align-items: center;
 }
-
-/* Sparkly Button */
-:root {
-  --glitter: url("https://assets.codepen.io/13471/silver-glitter-background.png");
+.sidebar .new-chat-button {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background: #45b9a2;
+  color: #172a46;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border: none;
+  transition: background 0.2s;
+  margin-top: 0px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.sparkles {
-  /* Use the fixed hue value from the inline style (--clr will be set to 168) */
-  font-size: max(0vw, 1rem);
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  border-radius: 5em;
-  background: linear-gradient(
-      0deg,
-      hsla(var(--clr), 100%, 70%) 0%,
-      hsla(var(--clr), 100%, 65%) 5%,
-      hsla(var(--clr), 80%, 35%) 15%,
-      hsla(var(--clr), 10%, 0%) 40%,
-      hsla(var(--clr), 25%, 12%) 90%
-    );
-  background-size: 200% 300%;
-  background-position: 0% 0%;
-  box-shadow: inset 0 0 2px hsla(var(--clr), 30%, 20%);
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-  place-items: center;
-  padding: 0;
-  position: relative;
-  overflow: hidden;
-  transform: translate(0px);
-  transition: all 0.5s cubic-bezier(0.77, 0, 0.18, 1);
-  box-shadow: 0 -0.5em 0.5em transparent,
-              0 0.5em 0.5em transparent,
-              0 0.5em 0.5em transparent,
-              0 0.5em 0.5em transparent,
-              0 0.25em 0.3em -0.2em hsla(var(--clr), 0%, 0%, 0.5),
-              0 0.35em 0.75em hsla(var(--clr), 0%, 0%, 0.75);
-}
-
-.sparkles::before,
-.sparkles::after {
-  --gradientPos: 50% 100%;
-  content: " ";
-  grid-column: 1;
-  grid-row: 1;
-  width: 100%;
-  height: 100%;
-  transition: inherit;
-}
-
-.sparkles:before {
-  inset: 0;
-  position: absolute;
-  transform: translate3d(0, 0, 0.01px);
-  border-radius: inherit;
-  background-image: var(--glitter), var(--glitter), linear-gradient(180deg, black 0%, white 80%);
-  background-size: 300px 170px, 280px 130px, 200% 200%;
-  background-blend-mode: multiply, multiply, overlay;
-  background-position: 0px 0px, 0px 0px, var(--gradientPos);
-  background-repeat: repeat;
-  mix-blend-mode: color-dodge;
-  filter: brightness(2) contrast(0.75);
-  animation: bubble 20s linear infinite;
-  animation-play-state: paused;
-  opacity: 0.5;
-  box-shadow: inset 0 -8px 10px -7px hsla(var(--clr), 70%, 80%, 0.75);
-}
-
-.sparkles:after {
-  background-image: radial-gradient(
-      ellipse at center 70%,
-      hsla(var(--clr), 100%, 99%, 0.8) 5%,
-      hsla(var(--clr), 90%, 80%, 1) 20%,
-      transparent 50%,
-      transparent 200%
-    ),
-    linear-gradient(
-      90deg,
-      hsla(var(--clr), 80%, 10%, 1) -10%,
-      transparent 25%,
-      transparent 75%,
-      hsla(var(--clr), 80%, 10%, 1) 110%
-    );
-  box-shadow: inset 0 0.25em 0.75em rgba(0, 0, 0, 1),
-              inset 0 -0.05em 0.2em rgba(255, 255, 255, 0.4),
-              inset 0 -1px 3px hsla(var(--clr), 80%, 50%, 0.75);
-  background-blend-mode: darken;
-  background-repeat: no-repeat;
-  background-size: 180% 80%, cover;
-  background-position: center 220%;
-  mix-blend-mode: hard-light;
-  filter: blur(5px);
-  opacity: 0;
-}
-
-.sparkles:hover,
-.sparkles.over {
-  background-position: 100% 100%;
-  transition: all 0.2s cubic-bezier(0.17, 0.84, 0.44, 1);
-  box-shadow: 0 -0.2em 1.5em hsla(var(--clr), 90%, 50%, 0.3),
-              0 0.5em 2em hsla(var(--clr), 90%, 70%, 0.55),
-              0 0.25em 0.3em -0.2em hsla(var(--clr), 0%, 0%, 1),
-              0 0.35em 0.75em hsla(var(--clr), 0%, 0%, 1),
-              0 0.25em 0.5em -0.3em hsl(var(--clr), 30%, 99%, 1),
-              0 0.25em 0.5em hsla(var(--clr), 20%, 30%, 0.35),
-              inset 0 -2px 5px -2px rgba(255, 255, 255, 0.5);
-}
-
-.sparkles.over {
-  transition-duration: 2s;
-}
-
-.sparkles:hover:before,
-.sparkles.over:before {
-  --gradientPos: 50% 50%;
-  animation-play-state: running;
-  filter: brightness(2) contrast(1);
-  box-shadow: inset 0 -5px 10px -4px hsla(var(--clr), 70%, 80%, 0.3);
-  opacity: 0.8;
-}
-
-.sparkles:hover:after,
-.sparkles.over:after {
-  opacity: 0.8;
-  transform: translateY(0px);
-}
-
-.sparkles span {
-  grid-column: 1;
-  grid-row: 1;
-  background-image: linear-gradient(
-      hsl(calc(var(--clr) - 43), 27%, 85%) 0%,
-      hsl(calc(var(--clr) - 60), 22%, 80%) 19%,
-      hsl(calc(var(--clr) - 50), 20%, 75%) 30%,
-      hsl(calc(var(--clr) - 52), 36%, 98%) 43%,
-      hsl(var(--clr), 70%, 70%, 1) 51%,
-      hsl(var(--clr), 50%, 85%, 1) 52%,
-      rgb(255, 255, 255) 100%
-    );
-  background-size: 1em 3.45em;
-  color: rgb(214, 222, 226);
-  -webkit-text-fill-color: transparent;
-  -webkit-background-clip: text;
-  filter: drop-shadow(0 0 0.05em rgba(0, 0, 0, 0.5)) drop-shadow(0 0.05em 0.05em rgba(0, 0, 0, 0.5));
-  transition-timing-function: inherit;
-  transition-duration: inherit;
-  transition-delay: 0s;
-  padding: 0.75em 1.5em;
-  transform: translateY(0);
-  z-index: 10;
-}
-
-.sparkles:hover span,
-.sparkles:active span,
-.sparkles.over span {
-  background-position-y: -100%;
-}
-
-.sparkles:active {
-  transform: translateY(0.075em);
-  box-shadow: 0 -0.2em 1.5em hsla(var(--clr), 90%, 50%, 0.4),
-              0 0.5em 2em hsla(var(--clr), 90%, 70%, 0.65),
-              0 0.15em 0.3em -0.2em hsla(var(--clr), 0%, 0%, 1),
-              0 0.25em 0.75em hsla(var(--clr), 0%, 0%, 1),
-              0 0.25em 0.5em -0.3em hsl(var(--clr), 30%, 99%, 1),
-              0 0.25em 0.5em hsla(var(--clr), 20%, 30%, 0.45),
-              inset 0 -2px 5px -2px rgba(255, 255, 255, 0.65);
-  transition-duration: 0.1s;
-}
-
-.sparkles:active:before,
-.sparkles:active:after {
-  opacity: 1;
-  filter: brightness(3) contrast(0.75);
-  animation-duration: 8s;
-}
-
-@keyframes bubble {
-  0% {
-    background-position: 0px 340px, 0px 130px, var(--gradientPos);
-  }
-  100% {
-    background-position: 0px 0px, 0px 0px, var(--gradientPos);
-  }
+.sidebar .new-chat-button:hover {
+  background: #1b95c6;
 }
 
 /* Main content */
@@ -258,22 +88,18 @@ body {
   padding: 20px;
   overflow: hidden;
 }
-
-/* Header */
 .header {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
 }
-
 .header-icon {
   width: 40px;
   height: 40px;
   margin-right: 10px;
   color: #ccd6f6;
 }
-
 .header-text {
   font-size: 1.5rem;
   color: #ccd6f6;
@@ -287,8 +113,6 @@ body {
   flex-direction: column;
   height: calc(100vh - 100px);
 }
-
-/* Chat area */
 .chat-area {
   max-width: 800px;
   margin: 0 auto;
@@ -297,14 +121,11 @@ body {
   position: relative;
   flex: 1;
 }
-
-/* Chat window */
 .chat-window {
   height: 100%;
   overflow-y: auto;
   padding: 20px;
 }
-
 .chat-window::-webkit-scrollbar {
   width: 8px;
 }
@@ -323,13 +144,11 @@ body {
   line-height: 1.4;
   white-space: pre-wrap;
 }
-
 .chat-message.bot {
   display: flex;
   align-items: flex-start;
   max-width: calc(100% - 60px);
 }
-
 .chat-message.user {
   background: #172a46;
   border-radius: 16px;
@@ -342,6 +161,7 @@ body {
   text-align: left;
 }
 
+/* Avatar */
 .avatar {
   width: 30px;
   height: 30px;
@@ -353,17 +173,91 @@ body {
   margin-right: 10px;
   flex-shrink: 0;
 }
-
 .avatar img {
   width: 28px;
   height: 28px;
   object-fit: contain;
 }
 
+/* Message text */
 .message-text {
   flex: 1;
   color: #ccd6f6;
 }
+
+/* Code container and header */
+.code-container {
+  margin: 10px 0;
+  max-width: 530px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  overflow: hidden; /* Prevents the container itself from scrolling */
+}
+
+.code-header {
+  background-color: #1e1e1e;
+  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.copy-code-button {
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.copy-code-button .copy-icon {
+  margin-right: 4px;
+}
+
+.copy-code-button:hover {
+  color: #ffffff;
+}
+
+/* Wrapper for code content only – ensures a persistent background and horizontal scrolling */
+.code-content {
+  background-color: #2d2d2d; /* Persistent black background */
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* The actual code block */
+.code-block {
+  padding: 10px;
+  font-family: monospace;
+  font-size: 0.9rem;
+  white-space: pre;
+  margin: 0;
+  display: block;
+  box-sizing: border-box;
+  min-width: 100%;
+}
+
+/* Custom scrollbar styling for .code-content (WebKit browsers) */
+.code-content::-webkit-scrollbar {
+  height: 8px;
+}
+
+.code-content::-webkit-scrollbar-track {
+  background: #333;
+}
+
+.code-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.code-content::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
 
 /* Message actions */
 .message-actions {
@@ -373,7 +267,6 @@ body {
   margin-top: 6px;
   padding-left: 0;
 }
-
 /* Logo buttons */
 .logo-buttons {
   display: flex;
@@ -381,30 +274,20 @@ body {
   margin-top: -4px;
   gap: 8px;
 }
-
 .logo-icon {
   width: 16px;
   height: 16px;
   filter: grayscale(100%);
 }
-
 .logo-icon.active {
   filter: none;
   animation: glowPulse 4s infinite;
 }
-
 @keyframes glowPulse {
-  0% {
-    filter: drop-shadow(0 0 1px var(--active-color));
-  }
-  50% {
-    filter: drop-shadow(0 0 6px var(--active-color));
-  }
-  100% {
-    filter: drop-shadow(0 0 1px var(--active-color));
-  }
+  0% { filter: drop-shadow(0 0 1px var(--active-color)); }
+  50% { filter: drop-shadow(0 0 6px var(--active-color)); }
+  100% { filter: drop-shadow(0 0 1px var(--active-color)); }
 }
-
 /* Action buttons */
 .action-button {
   background: transparent;
@@ -414,11 +297,9 @@ body {
   color: #ccd6f6;
   transition: color 0.2s;
 }
-
 .action-button:hover {
   color: #45b9a2;
 }
-
 .action-button:active {
   transform: scale(0.95);
 }
@@ -432,9 +313,8 @@ body {
   background: #172a46;
   border-radius: 22px;
   padding: 10px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
 .chat-input textarea {
   width: 100%;
   background: transparent;
@@ -449,7 +329,6 @@ body {
   padding-right: 60px;
   max-height: 150px;
 }
-
 .chat-input textarea::-webkit-scrollbar {
   width: 6px;
 }
@@ -461,7 +340,7 @@ body {
   border-radius: 3px;
 }
 
-/* Buttons */
+/* Send button */
 .send-button {
   position: absolute;
   bottom: 8px;
@@ -475,20 +354,19 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   transition: background 0.2s;
 }
-
 .send-button:hover {
   background: #1b95c6;
 }
-
 .send-button svg {
   stroke: #172a46;
   display: block;
   margin: auto;
 }
 
+/* Attach button */
 .attach-button {
   position: absolute;
   bottom: 8px;
@@ -501,7 +379,6 @@ body {
   opacity: 0.5;
   pointer-events: none;
 }
-
 .attach-button svg {
   stroke: #fff;
 }
@@ -520,7 +397,6 @@ body {
   justify-content: center;
   pointer-events: none;
 }
-
 .logo-svg {
   width: 256px;
   height: 256px;
@@ -533,25 +409,20 @@ body {
   transform-origin: center;
   transform-box: fill-box;
 }
-
 @keyframes pulseCenter {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.3); }
 }
-
 @keyframes pulseOuter {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
-
 .logo-center.thinking {
   animation: pulseCenter 1s infinite;
 }
-
 .logo-node.thinking {
   animation: pulseOuter 1s infinite;
 }
-
 .logo-node.top.thinking    { animation-delay: 0.2s; }
 .logo-node.right.thinking  { animation-delay: 0.3s; }
 .logo-node.bottom.thinking { animation-delay: 0.4s; }
@@ -573,34 +444,24 @@ body {
   align-items: center;
   justify-content: center;
   transition: opacity 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-
 .scroll-to-bottom:hover {
   background: #6b6b6b;
 }
-
 .logo-icon:not(.active) {
   opacity: 0.75;
 }
-
 @keyframes glow {
-  from {
-    text-shadow: 0 0 0px #45b9a2, 0 0 0px #45b9a2, 0 0 0px #45b9a2;
-  }
-  to {
-    text-shadow: 0 0 2px #45b9a2, 0 0 3px #45b9a2, 0 0 7px #45b9a2;
-  }
+  from { text-shadow: 0 0 0px #45b9a2; }
+  to { text-shadow: 0 0 2px #45b9a2, 0 0 3px #45b9a2, 0 0 7px #45b9a2; }
 }
-
 .glow {
   animation: glow 1s ease-in-out infinite alternate;
 }
-
 .sidebar.closed .sidebar-content {
   display: none;
 }
-
 .footer-text {
   position: fixed;
   bottom: 10px;

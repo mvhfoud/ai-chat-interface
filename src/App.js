@@ -41,22 +41,6 @@ const LogoIcon = ({ type, active, size }) => {
 };
 
 const Sidebar = ({ isOpen, toggleSidebar, handleNewChat }) => {
-  // We no longer need the slider so we remove any state related to color.
-  // Instead, we use a fixed hue value of 168 (roughly matching #45b9a2).
-  const [overClass, setOverClass] = useState(false);
-
-  // Mimic the temporary "over" class behavior with a setTimeout.
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setOverClass(true);
-      const removeTimeout = setTimeout(() => {
-        setOverClass(false);
-      }, 2500);
-      return () => clearTimeout(removeTimeout);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, []);
-
   return (
     <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
       <button className="sidebar-toggle-button" onClick={toggleSidebar}>
@@ -91,13 +75,8 @@ const Sidebar = ({ isOpen, toggleSidebar, handleNewChat }) => {
         )}
       </button>
       <div className="sidebar-content">
-        {/* Sparkly Button now uses a fixed color hue (168) and displays "new chat (inline)" */}
-        <button
-          className={`sparkles ${overClass ? "over" : ""}`}
-          onClick={handleNewChat}
-          style={{ "--clr": 168 }}
-        >
-          <span>New chat</span>
+        <button className="send-button new-chat-button" onClick={handleNewChat}>
+          <strong>New chat</strong>
         </button>
       </div>
     </div>
@@ -172,6 +151,82 @@ const ChatInputWithFooter = ({ chatInputBlock }) => {
   );
 };
 
+// CodeBlock component: Renders a header with a copy icon and label.
+// When clicked, it changes to "Copied" with a checkmark icon for 2 seconds.
+const CodeBlock = ({ code }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="code-container">
+      <div className="code-header">
+        <span>code</span>
+        <button className="copy-code-button" onClick={handleCopy}>
+          {copied ? (
+            <>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="copy-icon"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Copied
+            </>
+          ) : (
+            <>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="copy-icon"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              Copy
+            </>
+          )}
+        </button>
+      </div>
+      <div className="code-content">
+        <pre className="code-block">
+          <code>{code}</code>
+        </pre>
+      </div>
+    </div>
+  );
+};
+
+// Splits text by triple backticks and renders code parts using CodeBlock.
+function renderMessageText(text) {
+  const parts = text.split(/```/);
+  return parts.map((part, index) => {
+    if (index % 2 === 0) {
+      return <span key={index}>{part}</span>;
+    }
+    return <CodeBlock key={index} code={part} />;
+  });
+}
+
 function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -188,7 +243,8 @@ function App() {
       const handleScroll = () => {
         if (chatWindowRef.current) {
           const { scrollTop, scrollHeight, clientHeight } = chatWindowRef.current;
-          setShowScrollToBottom(scrollTop + clientHeight < scrollHeight - 100);
+          // Only show the scroll button if the gap is more than 50px.
+          setShowScrollToBottom(scrollHeight - scrollTop - clientHeight > 50);
         }
       };
 
@@ -214,10 +270,11 @@ function App() {
     }
     setIsGenerating(true);
 
-    // Simulated bot response with a random activeLogo property
+    // Simulated bot response including a code block for "Hello world!"
     const botResponse = {
       sender: 'bot',
-      text: 'This is a simulated response.\nIt can span multiple lines.\nEnjoy!',
+      text:
+        'This is a simulated response.\nIt can span multiple lines.\n```Hello world!```',
       activeLogo: Math.floor(Math.random() * 3)
     };
     setTimeout(() => {
@@ -259,11 +316,7 @@ function App() {
         onKeyDown={handleKeyDown}
         style={{ fontFamily: 'inherit' }}
       />
-      <button
-        className="attach-button"
-        title="File attachments coming soon"
-        disabled
-      >
+      <button className="attach-button" title="File attachments coming soon" disabled>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -305,11 +358,7 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        handleNewChat={handleNewChat}
-      />
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} handleNewChat={handleNewChat} />
       <div className="main-content">
         {isInitial ? (
           <div
@@ -382,7 +431,7 @@ function App() {
                         </div>
                       )}
                       <div>
-                        <div className="message-text">{msg.text}</div>
+                        <div className="message-text">{renderMessageText(msg.text)}</div>
                         {msg.sender === 'bot' && (
                           <div className="message-actions">
                             <div className="logo-buttons">
@@ -416,29 +465,31 @@ function App() {
                     </div>
                   ))}
                 </div>
-                <button
-                  className="scroll-to-bottom"
-                  onClick={() => {
-                    chatWindowRef.current?.scrollTo({
-                      top: chatWindowRef.current.scrollHeight,
-                      behavior: 'smooth'
-                    });
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    viewBox="0 0 24 24"
+                {showScrollToBottom && (
+                  <button
+                    className="scroll-to-bottom"
+                    onClick={() => {
+                      chatWindowRef.current?.scrollTo({
+                        top: chatWindowRef.current.scrollHeight,
+                        behavior: 'smooth'
+                      });
+                    }}
                   >
-                    <path d="M12 5v14M19 12l-7 7-7-7" />
-                  </svg>
-                </button>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 5v14M19 12l-7 7-7-7" />
+                    </svg>
+                  </button>
+                )}
               </div>
               <ChatInputWithFooter chatInputBlock={chatInputBlock} />
             </div>
