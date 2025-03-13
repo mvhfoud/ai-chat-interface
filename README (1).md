@@ -10,6 +10,7 @@ A sophisticated AI orchestration chat interface that combines multiple AI capabi
 ## Features
 
 - **Multi-AI Integration**: Visual indicators for DeepSeek (blue), Claude (red), and OpenAI (white) models
+![App Screenshot](./public/screenshot(2).png)
 - **Dynamic Chat Interface**:
   - Auto-expanding text input with shift+enter support
   - Smooth message transitions and scroll management
