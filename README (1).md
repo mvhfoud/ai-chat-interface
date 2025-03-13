@@ -31,7 +31,7 @@ A sophisticated AI orchestration chat interface that combines multiple AI capabi
 
 1. Clone repository:
    ```bash
-   git clone https://github.com/yourusername/orchestrAItor.git
+   git clone https://github.com/mvhfoud/ai-chat-interface.git
    ```
 2. Install dependencies:
    ```bash
@@ -55,17 +55,6 @@ A sophisticated AI orchestration chat interface that combines multiple AI capabi
   - View active model through glowing logo indicators
   - Toggle between models using the logo buttons
 
-## Component Structure
-
-```
-src/
-├── App.js               # Main application component
-├── App.css              # Global styles
-├── icon.svg             # Main application icon
-├── deepseek.svg         # DeepSeek logo
-├── claude.svg           # Claude logo
-└── openai.svg           # OpenAI logo
-```
 
 ## Key Technologies
 
