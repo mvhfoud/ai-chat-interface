@@ -1,70 +1,75 @@
-# Getting Started with Create React App
+# orchestrAItor
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-## Available Scripts
+A sophisticated AI orchestration chat interface that combines multiple AI capabilities in one seamless experience.
 
-In the project directory, you can run:
+![App Screenshot](./public/screenshot.png)
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Multi-AI Integration**: Visual indicators for DeepSeek (blue), Claude (red), and OpenAI (white) models
+![App Screenshot](./public/screenshot(2).png)
+- **Dynamic Chat Interface**:
+  - Auto-expanding text input with shift+enter support
+  - Smooth message transitions and scroll management
+  - Scroll-to-bottom indicator for new messages
+- **Code Collaboration**:
+  - Syntax-formatted code blocks with copy functionality
+  - Visual feedback on copy success
+- **Animated Visuals**:
+  - Pulsing central logo during AI processing
+  - Animated model indicators with color-coded glows
+  - Interactive SVG graphics with hover effects
+- **Responsive Design**:
+  - Collapsible sidebar with smooth transitions
+  - Adaptive message containers for different screen sizes
+  - Mobile-friendly layout
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone repository:
+   ```bash
+   git clone https://github.com/mvhfoud/ai-chat-interface.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start development server:
+   ```bash
+   npm start
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Usage
 
-### `npm run build`
+- **New Chat**: Click the "+ New Chat" button in the sidebar
+- **Input Message**:
+  - Type your message in the bottom textarea
+  - Use Shift+Enter for new lines, Enter to send
+- **Code Blocks**:
+  - Automatic detection of triple backtick code blocks
+  - Click "Copy" to copy code snippets
+- **Model Interaction**:
+  - View active model through glowing logo indicators
+  - Toggle between models using the logo buttons
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Key Technologies
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **React Hooks**: `useState`, `useRef`, `useEffect` for state management
+- **CSS Custom Properties**: Dynamic color variables for model indicators
+- **SVG Animations**: Custom keyframe animations for logo elements
+- **Clipboard API**: Secure text copying functionality
+- **Flexbox/Grid**: Modern layout techniques for responsiveness
 
-### `npm run eject`
+## Configuration
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Create a `.env` file for future API integrations:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```
+REACT_APP_DEEPSEEK_KEY=your_key_here
+REACT_APP_CLAUDE_KEY=your_key_here
+REACT_APP_OPENAI_KEY=your_key_here
+```

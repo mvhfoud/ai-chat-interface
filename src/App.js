@@ -344,7 +344,7 @@ function App() {
           strokeLinejoin="round"
         >
           {isGenerating ? (
-            <rect x="6" y="6" width="12" height="12" fill="white" />
+            <rect x="6" y="6" width="12" height="12"  />
           ) : (
             <>
               <line x1="12" y1="19" x2="12" y2="5" />
